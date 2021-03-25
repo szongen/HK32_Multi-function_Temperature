@@ -5,7 +5,8 @@
 */
 #include "TM1620.h"
 
-
+extern uint8_t WIFI_Connect_FLAG;
+extern uint8_t Rtc_Flag;
 //共阴字形码
 uint8_t fontCode[]={	0x3F,0x06,0x5B,0x4F,0x66,	//0-4
 											0x6D,0x7D,0x07,0x7F,0x6F,	//5-9
@@ -51,11 +52,10 @@ void TM1620_Init_Test(void);
 int TM1620_Init(void)
 {
 	
-	TM1620_LowLevel_Init();
+//	TM1620_LowLevel_Init();
 
 	TM1620_Init_Test();
 	
-	delay_ms(500);
 	
 	return 0;
 } 
@@ -64,12 +64,11 @@ int TM1620_LowLevel_Init(void)
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	GPIO_InitTypeDef GPIO_InitStruct;
-	
-	GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_3|GPIO_PIN_5;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_3|GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 	
 	DIO_HIGH;
 	STB_HIGH;
@@ -127,7 +126,7 @@ int TM1620_Write_8bit(uint8_t data)
 			DIO_LOW;
 		}
 		data=data>>1;
-		delay_ms(1);
+		delay_us(5);
 		CLK_HIGH;
 		//delay_ms(1);
 	}
@@ -139,13 +138,41 @@ void TM1620_Print(char* ch)
 {
 	uint8_t fcode[MAX_TUBE_NUM];
 	
+
+    if(Rtc_Flag == 0)
+    {            
 	for(int i=0;i<MAX_TUBE_NUM;i++)
 	{
 		fcode[i]=chToFontcode(ch[i]);
 	}
 	fcode[1] =fcode[1] |0x80;
 	fcode[4] =fcode[4] |0x80;
-	
+    }
+    else if(Rtc_Flag == 3)
+    {            
+	for(int i=0;i<MAX_TUBE_NUM;i++)
+	{
+		fcode[i]=chToFontcode(ch[i]);
+	}
+	fcode[1] =fcode[1] |0x80;
+    fcode[2] =fcode[2] |0x80;
+	fcode[4] =fcode[4] |0x80;
+    }
+    else
+    {
+        for(int i=0;i<MAX_TUBE_NUM;i++)
+	{
+		fcode[i]=chToFontcode(ch[i]);
+	}
+	fcode[2] =0x00;
+	fcode[3] =0x00;
+    }
+    
+    
+    if(WIFI_Connect_FLAG == 0)                //联网标志 未联网至第六个小数点点亮
+    {
+        fcode[5] =fcode[5] |0x80;
+    }
 	TM1620_Write(TM1620_DISP_MODE,0x02);//显示模式6位8段
 	TM1620_Write(TM1620_DATA,AUTO_ADDR_MODE);			//地址自增模式
 	

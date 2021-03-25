@@ -30,6 +30,9 @@
 
 extern UART_HandleTypeDef huart1;
 extern DHT11_Data_TypeDef DHT11;
+extern RTC_DateTypeDef GetData;  //获取日期结构体
+extern RTC_TimeTypeDef GetTime;   //获取时间结构体
+extern RTC_HandleTypeDef hrtc;
 //=============================================================================
 //定义常量
 //如果编译发生错误: #40: expected an identifier  DISABLE = 0, 类似这样的错误提示，可以包含头文件 #include "stm32f1xx.h" 来解决

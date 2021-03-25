@@ -33,10 +33,12 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
-#include "SEGGER_RTT.h"
 #include "delay.h"
 #include "DHT11.h"
 #include "TM1620.h"
+#include "key.h"
+#include "Modbus.h"
+//#include "SEGGER_RTT.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -68,6 +70,8 @@ void Error_Handler(void);
 #define KEY1_GPIO_Port GPIOA
 #define KEY2_Pin GPIO_PIN_1
 #define KEY2_GPIO_Port GPIOA
+#define USART_RE_Pin GPIO_PIN_4
+#define USART_RE_GPIO_Port GPIOA
 #define DHT11_Pin GPIO_PIN_5
 #define DHT11_GPIO_Port GPIOA
 #define DIO_Pin GPIO_PIN_6
@@ -77,6 +81,8 @@ void Error_Handler(void);
 #define CLK_Pin GPIO_PIN_1
 #define CLK_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+
+
 
 /* USER CODE END Private defines */
 
